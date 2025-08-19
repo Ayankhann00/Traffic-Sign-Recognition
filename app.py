@@ -11,7 +11,6 @@ def load_trained_model():
 
 model = load_trained_model()
 
-meta = pd.read_csv("archive/Meta.csv")
 
 st.title("🚦 Traffic Sign Recognition")
 st.write("Upload a traffic sign image, and the model will predict its class.")
@@ -37,3 +36,4 @@ if uploaded_file is not None:
         if pred_class in meta["ClassId"].values:
             sign_name = meta[meta["ClassId"] == pred_class]["SignName"].values[0]
             st.success(f"🚦 Predicted Traffic Sign: {sign_name}")
+
