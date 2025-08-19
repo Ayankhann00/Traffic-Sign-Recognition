@@ -4,9 +4,10 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 
+# Load the trained model
 model = tf.keras.models.load_model("traffic_model.h5")
 
-
+# Load the meta.csv (mapping ClassId -> SignName)
 meta = pd.read_csv("meta.csv")
 class_map = dict(zip(meta["ClassId"], meta["SignName"]))
 
@@ -24,7 +25,9 @@ if uploaded_file is not None:
     predictions = model.predict(img_array)
     predicted_class_id = np.argmax(predictions)
 
+    # Convert ID → Name
     predicted_class_name = class_map.get(predicted_class_id, "Unknown Sign")
 
     st.write(f"**Predicted Sign:** {predicted_class_name} (ID: {predicted_class_id})")
+
 
