@@ -1,39 +1,30 @@
 import streamlit as st
+import tensorflow as tf
 import numpy as np
-import cv2
-from tensorflow.keras.models import load_model
-from PIL import Image
 import pandas as pd
+from PIL import Image
 
-@st.cache_resource
-def load_trained_model():
-    return load_model("traffic_sign_model.h5")
-
-model = load_trained_model()
+model = tf.keras.models.load_model("traffic_model.h5")
 
 
-st.title("🚦 Traffic Sign Recognition")
-st.write("Upload a traffic sign image, and the model will predict its class.")
+meta = pd.read_csv("meta.csv")
+class_map = dict(zip(meta["ClassId"], meta["SignName"]))
 
-uploaded_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
+st.title("Traffic Sign Recognition App")
 
-img_size = 64
+uploaded_file = st.file_uploader("Upload a traffic sign image...", type=["jpg", "png", "jpeg"])
 
 if uploaded_file is not None:
-    image = Image.open(uploaded_file)
+    image = Image.open(uploaded_file).resize((30, 30))  
     st.image(image, caption="Uploaded Image", use_column_width=True)
 
-    img_array = np.array(image)
-    img_resized = cv2.resize(img_array, (img_size, img_size)) / 255.0
-    img_exp = np.expand_dims(img_resized, axis=0)
+    img_array = np.array(image) / 255.0  
+    img_array = np.expand_dims(img_array, axis=0)  
 
-    prediction = model.predict(img_exp)
-    pred_class = np.argmax(prediction)
+    predictions = model.predict(img_array)
+    predicted_class_id = np.argmax(predictions)
 
-    st.write(f"Predicted Class ID: {pred_class}")
+    predicted_class_name = class_map.get(predicted_class_id, "Unknown Sign")
 
-    if "ClassId" in meta.columns and "SignName" in meta.columns:
-        if pred_class in meta["ClassId"].values:
-            sign_name = meta[meta["ClassId"] == pred_class]["SignName"].values[0]
-            st.success(f"🚦 Predicted Traffic Sign: {sign_name}")
+    st.write(f"**Predicted Sign:** {predicted_class_name} (ID: {predicted_class_id})")
 
