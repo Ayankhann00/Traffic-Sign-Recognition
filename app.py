@@ -8,7 +8,7 @@ from PIL import Image
 model = tf.keras.models.load_model("traffic_sign_model.h5")
 
 # Load the meta.csv (mapping ClassId -> SignName)
-meta = pd.read_csv("Archive/meta.csv")
+meta = pd.read_csv("Archive/Meta.csv")
 class_map = dict(zip(meta["ClassId"], meta["SignName"]))
 
 st.title("Traffic Sign Recognition App")
@@ -29,6 +29,7 @@ if uploaded_file is not None:
     predicted_class_name = class_map.get(predicted_class_id, "Unknown Sign")
 
     st.write(f"**Predicted Sign:** {predicted_class_name} (ID: {predicted_class_id})")
+
 
 
 
